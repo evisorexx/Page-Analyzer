@@ -5,6 +5,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Poetry Install
+        uses: knowsuchagency/poetry-install@v2
+
       - uses: actions/checkout@v4
 
       - run: make install
