@@ -18,7 +18,6 @@ from flask import (
 
 load_dotenv()
 
-DATABASE_URL = os.getenv('DATABASE_URL')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 app = Flask(__name__)
@@ -39,8 +38,9 @@ def add_url():
         flash('Введен некорректный URL!', 'error')
         return redirect(url_for('index'))
     if get_url_by_name(given_url):
+        url = get_url_by_name(given_url)
         flash('URL уже есть в базе!', 'info')
-        return redirect(url_for('index'))
+        return redirect(url_for('url', id=url.id))
     new_id = add_given_url(given_url)
     flash('URL успешно добавлен!', 'success')
     return redirect(
@@ -63,3 +63,8 @@ def url(id):
         'url.html',
         url=url
     )
+
+
+@app.post('/urls/<int:id>/checks')
+def url_check(id):
+    pass

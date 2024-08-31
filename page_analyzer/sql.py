@@ -36,4 +36,8 @@ def get_url_by_name(name):
     with db.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute('SELECT * FROM urls WHERE name=(%s)', (name,))
         url = cursor.fetchone()
-    return True if url else False
+    return url
+
+
+def do_url_check(url):
+    pass
