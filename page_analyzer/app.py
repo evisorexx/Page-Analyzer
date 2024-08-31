@@ -16,8 +16,6 @@ from flask import (
     redirect
     )
 
-
-
 load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')

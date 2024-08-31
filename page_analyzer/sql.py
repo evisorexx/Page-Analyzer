@@ -13,7 +13,7 @@ db = psycopg2.connect(DATABASE_URL)
 def add_given_url(given_url):
     with db.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute("INSERT INTO urls (name) VALUES (%s) RETURNING id;",
-                            (given_url,))
+                       (given_url,))
         id = cursor.fetchone()
     return id
 
