@@ -18,7 +18,7 @@ from flask import (
 
 load_dotenv()
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -33,9 +33,9 @@ def index():
 
 @app.post('/urls')
 def add_url():
-    given_url = request.form.get('url').rstrip('/')
-    if not validate_url(given_url):
-        flash('Введен некорректный URL!', 'error')
+    given_url = validate_url(request.form.get('url'))
+    if not given_url:
+        flash('Введен некорректный URL!', 'danger')
         return redirect(url_for('index'))
     if get_url_by_name(given_url):
         url = get_url_by_name(given_url)

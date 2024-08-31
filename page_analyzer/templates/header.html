@@ -10,5 +10,5 @@
 </nav>
 </header>
 {% for category, message in get_flashed_messages(with_categories=True) %}
-    <div class="alert alert-{{category}}" role="alert">{{message}}</div>
+    <div class="alert alert-{{ category }}" role="alert">{{message}}</div>
 {% endfor %}

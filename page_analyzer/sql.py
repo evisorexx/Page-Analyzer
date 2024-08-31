@@ -5,7 +5,7 @@ from psycopg2.extras import NamedTupleCursor
 
 load_dotenv()
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 db = psycopg2.connect(DATABASE_URL)
 
