@@ -1,10 +1,10 @@
-PORT ?= 8000
+PORT ?= 5000
 
 install:
-	poetry install
+	poetry install --no-root
 
 build:
-	poetry build
+	./build.sh
 
 lint:
 	poetry run flake8 page_analyzer
