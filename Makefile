@@ -1,7 +1,7 @@
 PORT ?= 5000
 
 install:
-	poetry install --no-root
+	poetry install
 
 build:
 	./build.sh

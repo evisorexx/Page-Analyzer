@@ -1,9 +1,9 @@
-DROP TABLE IF EXISTS urls;
+DROP TABLE IF EXISTS urls CASCADE;
 
 CREATE TABLE urls (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255),
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
 DROP TABLE IF EXISTS url_checks;
@@ -15,5 +15,5 @@ CREATE TABLE url_checks (
     h1 VARCHAR(255),
     title VARCHAR(255),
     description TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );

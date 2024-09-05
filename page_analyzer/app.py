@@ -19,6 +19,7 @@ from page_analyzer.sql import (
 load_dotenv()
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -37,11 +38,11 @@ def add_url():
     if not given_url:
         flash('Введен некорректный URL!', 'danger')
         return redirect(url_for('index'))
-    if get_url_by_name(given_url):
-        url = get_url_by_name(given_url)
+    if get_url_by_name(DATABASE_URL, given_url):
+        url = get_url_by_name(DATABASE_URL, given_url)
         flash('URL уже есть в базе!', 'info')
         return redirect(url_for('url', id=url.id))
-    new_id = add_given_url(given_url)
+    new_id = add_given_url(DATABASE_URL, given_url)
     flash('URL успешно добавлен!', 'success')
     return redirect(
         url_for('url', id=new_id.id)
@@ -52,13 +53,13 @@ def add_url():
 def all_urls():
     return render_template(
         'urls.html',
-        urls=get_urls_list()
+        urls=get_urls_list(DATABASE_URL)
     )
 
 
 @app.get('/urls/<int:id>')
 def url(id):
-    url = get_url_by_id(id)
+    url = get_url_by_id(DATABASE_URL, id)
     return render_template(
         'url.html',
         url=url
