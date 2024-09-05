@@ -10,8 +10,9 @@ def open_connection(db_url):
 def add_given_url(db_url, given_url):
     with open_connection(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute("INSERT INTO urls (name) VALUES (%s) RETURNING id;",
-                        (given_url,))
+            cursor.execute(
+                "INSERT INTO urls (name) VALUES (%s) RETURNING id;",
+                (given_url,))
             id = cursor.fetchone()
             conn.commit()
         return id
