@@ -1,12 +1,6 @@
 import os
 from page_analyzer.data_validator import validate_url
 from dotenv import load_dotenv
-from page_analyzer.sql import (
-    add_given_url,
-    get_urls_list,
-    get_url_by_id,
-    get_url_by_name
-)
 from flask import (
     Flask,
     render_template,
@@ -15,13 +9,19 @@ from flask import (
     url_for,
     redirect
     )
+from page_analyzer.sql import (
+    add_given_url,
+    get_urls_list,
+    get_url_by_id,
+    get_url_by_name
+)
 
 load_dotenv()
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = SECRET_KEY
 
 
 @app.route('/')

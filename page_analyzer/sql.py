@@ -15,6 +15,7 @@ def add_given_url(given_url):
         cursor.execute("INSERT INTO urls (name) VALUES (%s) RETURNING id;",
                        (given_url,))
         id = cursor.fetchone()
+        db.commit()
     return id
 
 
@@ -22,6 +23,7 @@ def get_urls_list():
     with db.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute('SELECT * FROM urls ORDER BY id DESC;')
         urls = cursor.fetchall()
+        db.commit()
     return urls
 
 
@@ -29,6 +31,7 @@ def get_url_by_id(id):
     with db.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute('SELECT * FROM urls WHERE id=(%s)', (id,))
         url = cursor.fetchone()
+        db.commit()
     return url
 
 
@@ -36,6 +39,7 @@ def get_url_by_name(name):
     with db.cursor(cursor_factory=NamedTupleCursor) as cursor:
         cursor.execute('SELECT * FROM urls WHERE name=(%s)', (name,))
         url = cursor.fetchone()
+        db.commit()
     return url
 
 
