@@ -13,7 +13,9 @@ from page_analyzer.sql import (
     add_given_url,
     get_urls_list,
     get_url_by_id,
-    get_url_by_name
+    get_url_by_name,
+    add_url_check,
+    get_url_check
 )
 
 load_dotenv()
@@ -60,12 +62,16 @@ def all_urls():
 @app.get('/urls/<int:id>')
 def url(id):
     url = get_url_by_id(DATABASE_URL, id)
+    check_results = get_url_check(DATABASE_URL, id)
     return render_template(
         'url.html',
-        url=url
+        url=url,
+        check_results=check_results
     )
 
 
 @app.post('/urls/<int:id>/checks')
 def url_check(id):
-    pass
+    add_url_check(DATABASE_URL, id)
+    flash('Страница успешно проверена!', 'success')
+    return redirect(url_for('url', id=id))

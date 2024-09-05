@@ -1,5 +1,5 @@
 import psycopg2
-from psycopg2.extras import NamedTupleCursor
+from psycopg2.extras import NamedTupleCursor, DictCursor
 
 
 def open_connection(db_url):
@@ -45,5 +45,22 @@ def get_url_by_name(db_url, name):
         return url
 
 
-def do_url_check(url):
-    pass
+def add_url_check(db_url, url_id):
+    with open_connection(db_url) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                'INSERT INTO url_checks (url_id) VALUES (%s)',
+                (url_id, ))
+            conn.commit()
+
+
+def get_url_check(db_url, url_id):
+    with open_connection(db_url) as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cursor:
+            cursor.execute(
+                'SELECT * FROM url_checks WHERE url_id=(%s) \
+                ORDER BY created_at DESC',
+                (url_id, ))
+            check_results = cursor.fetchall()
+            conn.commit()
+        return check_results
