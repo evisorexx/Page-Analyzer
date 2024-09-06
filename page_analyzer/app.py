@@ -1,4 +1,5 @@
 import os
+import requests
 from page_analyzer.data_validator import validate_url
 from dotenv import load_dotenv
 from flask import (
@@ -15,7 +16,8 @@ from page_analyzer.sql import (
     get_url_by_id,
     get_url_by_name,
     add_url_check,
-    get_url_check
+    get_url_check,
+    get_all_last_checks
 )
 
 load_dotenv()
@@ -53,9 +55,11 @@ def add_url():
 
 @app.get('/urls')
 def all_urls():
+    url_checks = get_all_last_checks(DATABASE_URL)
     return render_template(
         'urls.html',
-        urls=get_urls_list(DATABASE_URL)
+        urls=get_urls_list(DATABASE_URL),
+        url_checks=url_checks
     )
 
 
@@ -72,6 +76,14 @@ def url(id):
 
 @app.post('/urls/<int:id>/checks')
 def url_check(id):
-    add_url_check(DATABASE_URL, id)
-    flash('Страница успешно проверена!', 'success')
-    return redirect(url_for('url', id=id))
+    url = get_url_by_id(DATABASE_URL, id)[1]
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        status = response.status_code
+        add_url_check(DATABASE_URL, id, status)
+        flash('Страница успешно проверена!', 'success')
+    except Exception:
+        flash('При проверке произошла ошибка.', 'danger')
+    finally:
+        return redirect(url_for('url', id=id))
