@@ -3,6 +3,9 @@ name = "hexlet-code"
 version = "0.1.0"
 description = ""
 authors = ["Andrey M. <tolkoigri@yandex.ru>"]
+packages = [
+    {include = "page_analyzer"}
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -11,11 +14,11 @@ flask = "^3.0.3"
 python-dotenv = "^1.0.1"
 flake8 = "^7.1.0"
 gunicorn = "^22.0.0"
-psycopg2 = "^2.9.9"
 postgres = "^4.0"
 validators = "^0.33.0"
 requests = "^2.32.3"
 beautifulsoup4 = "^4.12.3"
+psycopg2-binary = "^2.9.9"
 
 
 [build-system]
