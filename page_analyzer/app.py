@@ -50,7 +50,7 @@ def add_url():
     given_url = validate_url(request.form.get('url'))
     if not given_url:
         flash('Некорректный URL', 'danger')
-        return redirect(url_for('index'))
+        return render_template('index.html'), 422
     if get_url_by_name(DATABASE_URL, given_url):
         url = get_url_by_name(DATABASE_URL, given_url)
         flash('Страница уже существует', 'info')
