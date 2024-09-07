@@ -12,7 +12,7 @@ from flask import (
     url_for,
     redirect,
     abort
-    )
+)
 from page_analyzer.sql import (
     add_given_url,
     get_urls_list,
