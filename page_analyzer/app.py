@@ -1,14 +1,17 @@
 import os
 import requests
+from requests.exceptions import ReadTimeout, ConnectionError
 from page_analyzer.data_validator import validate_url
 from dotenv import load_dotenv
+from page_analyzer.html_parser import parser
 from flask import (
     Flask,
     render_template,
     request,
     flash,
     url_for,
-    redirect
+    redirect,
+    abort
     )
 from page_analyzer.sql import (
     add_given_url,
@@ -17,7 +20,8 @@ from page_analyzer.sql import (
     get_url_by_name,
     add_url_check,
     get_url_check,
-    get_all_last_checks
+    get_all_last_checks,
+    delete_url
 )
 
 load_dotenv()
@@ -27,6 +31,11 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('not_found.html'), 404
 
 
 @app.route('/')
@@ -66,6 +75,8 @@ def all_urls():
 @app.get('/urls/<int:id>')
 def url(id):
     url = get_url_by_id(DATABASE_URL, id)
+    if not url:
+        return abort(404)
     check_results = get_url_check(DATABASE_URL, id)
     return render_template(
         'url.html',
@@ -74,15 +85,28 @@ def url(id):
     )
 
 
+@app.post('/urls/<int:id>/delete')
+def url_delete(id):
+    delete_url(DATABASE_URL, id)
+    flash('Страница удалена успешно!', 'success')
+    return redirect(url_for('index'))
+
+
 @app.post('/urls/<int:id>/checks')
 def url_check(id):
     url = get_url_by_id(DATABASE_URL, id)[1]
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
+        html_values = parser(response.text)
         response.raise_for_status()
         status = response.status_code
-        add_url_check(DATABASE_URL, id, status)
+        add_url_check(DATABASE_URL, id, status, html_values)
         flash('Страница успешно проверена!', 'success')
+    except ReadTimeout:
+        flash('Ресурс не отвечает.', 'warning')
+    except ConnectionError:
+        flash('Ресурса не существует. Советуем удалить его из базы.',
+              'warning')
     except Exception:
         flash('При проверке произошла ошибка.', 'danger')
     finally:

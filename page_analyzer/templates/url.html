@@ -24,6 +24,11 @@
     </table>
   </div>
 
+  <form method="post" action="{{ url_for('url_delete', id=url.id) }}">
+    <input type="submit" class="btn btn-danger" value="Удалить страницу">
+  </form>
+
+
   <h2 class="mt-5 mb-3">Проверки</h2>
   <form method="post" action="{{ url_for('url_check', id=url.id) }}">
     <input type="submit" class="btn btn-primary" value="Запустить проверку">

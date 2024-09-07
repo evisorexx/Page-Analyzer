@@ -12,6 +12,7 @@
       <th>ID</th>
       <th>Имя</th>
       <th>Код последней проверки</th>
+      <th>Время последней проверки</th>
     </tr>
     </thead>
     <tbody>
@@ -27,7 +28,10 @@
             {% for check in url_checks %}
               {% if check.url_id == url.id %}
                 <td>
-                {{ check.status_code }}
+                  {{ check.status_code }}
+                </td>
+                <td>
+                  {{ check.created_at }}
                 </td>
               {% endif %}
             {% endfor %}
