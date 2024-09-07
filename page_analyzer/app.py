@@ -49,14 +49,14 @@ def index():
 def add_url():
     given_url = validate_url(request.form.get('url'))
     if not given_url:
-        flash('Введен некорректный URL!', 'danger')
+        flash('Некорректный URL', 'danger')
         return redirect(url_for('index'))
     if get_url_by_name(DATABASE_URL, given_url):
         url = get_url_by_name(DATABASE_URL, given_url)
-        flash('URL уже есть в базе!', 'info')
+        flash('Страница уже существует', 'info')
         return redirect(url_for('url', id=url.id))
     new_id = add_given_url(DATABASE_URL, given_url)
-    flash('URL успешно добавлен!', 'success')
+    flash('Страница успешно добавлена', 'success')
     return redirect(
         url_for('url', id=new_id.id)
     )
@@ -88,7 +88,7 @@ def url(id):
 @app.post('/urls/<int:id>/delete')
 def url_delete(id):
     delete_url(DATABASE_URL, id)
-    flash('Страница удалена успешно!', 'success')
+    flash('Страница удалена успешно', 'success')
     return redirect(url_for('index'))
 
 
@@ -101,13 +101,13 @@ def url_check(id):
         response.raise_for_status()
         status = response.status_code
         add_url_check(DATABASE_URL, id, status, html_values)
-        flash('Страница успешно проверена!', 'success')
+        flash('Страница успешно проверена', 'success')
     except ReadTimeout:
-        flash('Ресурс не отвечает.', 'warning')
+        flash('Ресурс не отвечает', 'warning')
     except ConnectionError:
-        flash('Ресурса не существует. Советуем удалить его из базы.',
+        flash('Ресурса не существует, советуем удалить его из базы',
               'warning')
     except Exception:
-        flash('При проверке произошла ошибка.', 'danger')
+        flash('Произошла ошибка при проверке', 'danger')
     finally:
         return redirect(url_for('url', id=id))
