@@ -1,7 +1,7 @@
 import os
 import requests
 from requests.exceptions import ReadTimeout, ConnectionError
-from page_analyzer.data_validator import validate_url
+from page_analyzer.data_validator import validate_url, normalize_url
 from dotenv import load_dotenv
 from page_analyzer.html_parser import parser
 from flask import (
@@ -13,7 +13,7 @@ from flask import (
     redirect,
     abort
 )
-from page_analyzer.sql import (
+from page_analyzer.db import (
     add_given_url,
     get_urls_list,
     get_url_by_id,
@@ -35,22 +35,24 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('not_found.html'), 404
+    return render_template('errors/not_found.html'), 404
 
 
 @app.route('/')
 def index():
     return render_template(
-        'index.html'
+        'pages/index.html'
     )
 
 
 @app.post('/urls')
 def add_url():
-    given_url = validate_url(request.form.get('url'))
-    if not given_url:
+    given_url = request.form.get('url')
+    if not validate_url(given_url):
         flash('Некорректный URL', 'danger')
-        return render_template('index.html'), 422
+        return render_template('pages/index.html'), 422
+    else:
+        given_url = normalize_url(given_url)
     if get_url_by_name(DATABASE_URL, given_url):
         url = get_url_by_name(DATABASE_URL, given_url)
         flash('Страница уже существует', 'info')
@@ -66,7 +68,7 @@ def add_url():
 def all_urls():
     url_checks = get_all_last_checks(DATABASE_URL)
     return render_template(
-        'urls.html',
+        'pages/urls.html',
         urls=get_urls_list(DATABASE_URL),
         url_checks=url_checks
     )
@@ -79,7 +81,7 @@ def url(id):
         return abort(404)
     check_results = get_url_check(DATABASE_URL, id)
     return render_template(
-        'url.html',
+        'pages/url.html',
         url=url,
         check_results=check_results
     )

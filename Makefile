@@ -6,6 +6,9 @@ install:
 build:
 	./build.sh
 
+db_restore:
+	poetry run pg_restore -d padb padb.dump
+	
 lint:
 	poetry run flake8 page_analyzer
 

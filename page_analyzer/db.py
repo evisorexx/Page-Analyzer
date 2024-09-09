@@ -2,13 +2,23 @@ import psycopg2
 from psycopg2.extras import NamedTupleCursor, DictCursor
 
 
-def open_connection(db_url):
-    conn = psycopg2.connect(db_url)
-    return conn
+class DataConn:
+    def __init__(self, db_url):
+        self.db_url = db_url
+
+    def __enter__(self):
+        self.conn = psycopg2.connect(self.db_url)
+        return self.conn
+
+    def __exit__(self, ex_type, ex_val, traceback):
+        self.conn.close()
+        if ex_val:
+            print(traceback)
+            raise ex_type
 
 
 def add_given_url(db_url, given_url):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 "INSERT INTO urls (name) VALUES (%s) RETURNING id",
@@ -19,7 +29,7 @@ def add_given_url(db_url, given_url):
 
 
 def delete_url(db_url, url_id):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute('DELETE FROM url_checks WHERE url_id=(%s)',
                            (url_id,))
@@ -28,7 +38,7 @@ def delete_url(db_url, url_id):
 
 
 def get_urls_list(db_url):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute('SELECT * FROM urls ORDER BY id DESC;')
             urls = cursor.fetchall()
@@ -37,7 +47,7 @@ def get_urls_list(db_url):
 
 
 def get_url_by_id(db_url, id):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute('SELECT * FROM urls WHERE id=(%s)', (id,))
             url = cursor.fetchone()
@@ -46,7 +56,7 @@ def get_url_by_id(db_url, id):
 
 
 def get_url_by_name(db_url, name):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute('SELECT * FROM urls WHERE name=(%s)', (name,))
             url = cursor.fetchone()
@@ -55,7 +65,7 @@ def get_url_by_name(db_url, name):
 
 
 def add_url_check(db_url, url_id, status, html_values):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor() as cursor:
             h1, title, description = html_values.values()
             cursor.execute(
@@ -67,7 +77,7 @@ def add_url_check(db_url, url_id, status, html_values):
 
 
 def get_url_check(db_url, url_id):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=DictCursor) as cursor:
             cursor.execute(
                 'SELECT * FROM url_checks WHERE url_id=(%s) \
@@ -78,7 +88,7 @@ def get_url_check(db_url, url_id):
 
 
 def get_all_last_checks(db_url):
-    with open_connection(db_url) as conn:
+    with DataConn(db_url) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
                 'SELECT * FROM url_checks \
