@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-make install && pg_dump -Fc padb > padb.dump && psql -a -d $DATABASE_URL -f database.sql
+make install && pg_dump --dbname=$DATABASE_URL && psql -a -d $DATABASE_URL -f database.sql
